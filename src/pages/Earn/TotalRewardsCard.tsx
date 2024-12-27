@@ -13,7 +13,7 @@ import { useGmMarketsApy } from "domain/synthetics/markets/useGmMarketsApy";
 import { useChainId } from "lib/chains";
 import { contractFetcher } from "lib/contracts/contractFetcher";
 import { PLACEHOLDER_ACCOUNT, ProcessedData } from "lib/legacy";
-import { formatAmount, formatKeyAmount } from "lib/numbers";
+import { formatAmount, formatBalanceAmountWithUsd, formatKeyAmount } from "lib/numbers";
 import { usePendingTxns } from "lib/usePendingTxns";
 import useWallet from "lib/wallets/useWallet";
 
@@ -181,10 +181,14 @@ export function TotalRewardsCard({
                     }
                     showDollar={false}
                     value={
-                      <>
-                        {formatKeyAmount(processedData, "extendedGmxTrackerRewards", 18, 4, true)} ($
-                        {formatKeyAmount(processedData, "extendedGmxTrackerRewardsUsd", USD_DECIMALS, 2, true)})
-                      </>
+                      processedData?.extendedGmxTrackerRewards === undefined ||
+                      processedData?.extendedGmxTrackerRewardsUsd === undefined
+                        ? "..."
+                        : formatBalanceAmountWithUsd(
+                            processedData.extendedGmxTrackerRewards,
+                            processedData.extendedGmxTrackerRewardsUsd,
+                            18
+                          )
                     }
                   />
                   <StatsTooltipRow
@@ -196,10 +200,14 @@ export function TotalRewardsCard({
                     }
                     showDollar={false}
                     value={
-                      <>
-                        {formatKeyAmount(processedData, "totalVesterRewards", 18, 4, true)} ($
-                        {formatKeyAmount(processedData, "totalVesterRewardsUsd", USD_DECIMALS, 2, true)})
-                      </>
+                      processedData?.totalVesterRewards === undefined ||
+                      processedData?.totalVesterRewardsUsd === undefined
+                        ? "..."
+                        : formatBalanceAmountWithUsd(
+                            processedData.totalVesterRewards,
+                            processedData.totalVesterRewardsUsd,
+                            18
+                          )
                     }
                   />
                 </>
