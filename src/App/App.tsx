@@ -37,6 +37,7 @@ import { sendPendingOrderTxnErrorMetric } from "lib/metrics";
 import { AppRoutes } from "./AppRoutes";
 import { TokensBalancesContextProvider } from "context/TokensBalancesContext/TokensBalancesContextProvider";
 import { sendUserAnalyticsOrderResultEvent } from "lib/userAnalytics";
+import { SorterProvider } from "components/Sorter/SorterProvider";
 
 // @ts-ignore
 if (window?.ethereum?.autoRefreshOnNetworkChange) {
@@ -122,6 +123,7 @@ function App() {
   }, []);
 
   let app = <AppRoutes />;
+  app = <SorterProvider>{app}</SorterProvider>;
   app = <TokensFavoritesContextProvider>{app}</TokensFavoritesContextProvider>;
   app = <SyntheticsEventsProvider>{app}</SyntheticsEventsProvider>;
   app = <SubaccountContextProvider>{app}</SubaccountContextProvider>;
