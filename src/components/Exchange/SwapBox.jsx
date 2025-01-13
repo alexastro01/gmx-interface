@@ -29,7 +29,6 @@ import {
   STOP,
   SWAP,
   SWAP_OPTIONS,
-  SWAP_OPTIONS_CLASSNAMES,
   SWAP_ORDER_OPTIONS,
   USDG_ADDRESS,
   USDG_DECIMALS,
@@ -65,6 +64,8 @@ import { LeverageSlider } from "components/LeverageSlider/LeverageSlider";
 import ToggleSwitch from "components/ToggleSwitch/ToggleSwitch";
 import TokenWithIcon from "components/TokenIcon/TokenWithIcon";
 import { get1InchSwapUrl } from "config/links";
+import { getPriceDecimals, getToken, getV1Tokens, getWhitelistedV1Tokens } from "config/tokens";
+import { MAX_METAMASK_MOBILE_DECIMALS } from "config/ui";
 import { useUserReferralCode } from "domain/referrals/hooks";
 import { useTokensAllowanceData } from "domain/synthetics/tokens/useTokenAllowanceData";
 import {
@@ -94,7 +95,6 @@ import { usePrevious } from "lib/usePrevious";
 import useIsMetamaskMobile from "lib/wallets/useIsMetamaskMobile";
 import useWallet from "lib/wallets/useWallet";
 import { useHistory } from "react-router-dom";
-import { getPriceDecimals, getToken, getV1Tokens, getWhitelistedV1Tokens } from "sdk/configs/tokens";
 import StatsTooltipRow from "../StatsTooltip/StatsTooltipRow";
 import FeesTooltip from "./FeesTooltip";
 import NoLiquidityErrorModal from "./NoLiquidityErrorModal";
@@ -2006,7 +2006,6 @@ export default function SwapBox(props) {
               icons={SWAP_ICONS}
               options={SWAP_OPTIONS}
               optionLabels={localizedSwapLabels}
-              optionClassnames={SWAP_OPTIONS_CLASSNAMES}
               option={swapOption}
               onChange={onSwapOptionChange}
               className="Exchange-swap-option-tabs"
@@ -2171,7 +2170,7 @@ export default function SwapBox(props) {
                             onClick={() => {
                               setShortCollateralAddress(existingCurrentIndexCollateralToken?.address);
                             }}
-                            className="cursor-pointer text-slate-100 underline"
+                            className="cursor-pointer text-gray-300 underline"
                           >
                             <Trans>Switch to {existingCurrentIndexCollateralToken?.symbol} collateral.</Trans>
                           </div>
