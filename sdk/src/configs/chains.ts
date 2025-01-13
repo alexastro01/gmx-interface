@@ -1,19 +1,22 @@
-import { arbitrum, avalanche, avalancheFuji, Chain } from "viem/chains";
+import { arbitrum, arbitrumSepolia, avalanche, avalancheFuji, Chain } from "viem/chains";
 
 export const AVALANCHE = 43114;
 export const AVALANCHE_FUJI = 43113;
 export const ARBITRUM = 42161;
+export const ARBITRUM_SEPOLIA = 421614;
 
-export const SUPPORTED_CHAIN_IDS = [ARBITRUM, AVALANCHE];
+export const SUPPORTED_CHAIN_IDS = [ARBITRUM, AVALANCHE, ARBITRUM_SEPOLIA];
 
 export const HIGH_EXECUTION_FEES_MAP = {
   [ARBITRUM]: 5, // 5 USD
   [AVALANCHE]: 5, // 5 USD
   [AVALANCHE_FUJI]: 5, // 5 USD
+  [ARBITRUM_SEPOLIA]: 5, // 5 USD
 };
 
 export const MAX_FEE_PER_GAS_MAP = {
   [AVALANCHE]: 200000000000n, // 200 gwei
+  [ARBITRUM_SEPOLIA]: 200000000000n, // 200 gwei
 };
 
 // added to maxPriorityFeePerGas
@@ -22,6 +25,7 @@ export const MAX_FEE_PER_GAS_MAP = {
 export const GAS_PRICE_PREMIUM_MAP = {
   [ARBITRUM]: 0n,
   [AVALANCHE]: 3000000000n, // 3 gwei
+  [ARBITRUM_SEPOLIA]: 3000000000n, // 3 gwei
 };
 
 /*
@@ -31,12 +35,14 @@ export const MAX_PRIORITY_FEE_PER_GAS_MAP: Record<number, bigint | undefined> = 
   [ARBITRUM]: 1500000000n,
   [AVALANCHE]: 1500000000n,
   [AVALANCHE_FUJI]: 1500000000n,
+  [ARBITRUM_SEPOLIA]: 1500000000n,
 };
 
 export const EXCESSIVE_EXECUTION_FEES_MAP = {
   [ARBITRUM]: 10, // 10 USD
   [AVALANCHE]: 10, // 10 USD
   [AVALANCHE_FUJI]: 10, // 10 USD
+  [ARBITRUM_SEPOLIA]: 10, // 10 USD
 };
 
 // added to gasPrice
@@ -58,12 +64,14 @@ export const EXCESSIVE_EXECUTION_FEES_MAP = {
 // especially if execution fee buffer and lower than gas price buffer defined bellow
 export const GAS_PRICE_BUFFER_MAP = {
   [ARBITRUM]: 2000n, // 20%
+  [ARBITRUM_SEPOLIA]: 2000n, // 20%
 };
 
 const CHAIN_BY_CHAIN_ID = {
   [AVALANCHE_FUJI]: avalancheFuji,
   [ARBITRUM]: arbitrum,
   [AVALANCHE]: avalanche,
+  [ARBITRUM_SEPOLIA]: arbitrumSepolia,
 };
 
 export const getChain = (chainId: number): Chain => {
@@ -97,6 +105,10 @@ export const EXECUTION_FEE_CONFIG_V2: {
     defaultBufferBps: 1000, // 10%
   },
   [ARBITRUM]: {
+    shouldUseMaxPriorityFeePerGas: false,
+    defaultBufferBps: 3000, // 30%
+  },
+  [ARBITRUM_SEPOLIA]: {
     shouldUseMaxPriorityFeePerGas: false,
     defaultBufferBps: 3000, // 30%
   },

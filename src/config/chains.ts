@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import type { NetworkMetadata } from "lib/wallets";
 import sample from "lodash/sample";
 import { isDevelopment } from "./env";
-import { ARBITRUM, AVALANCHE, AVALANCHE_FUJI, BSС_MAINNET, BSС_TESTNET, ETH_MAINNET } from "./static/chains";
+import { ARBITRUM, ARBITRUM_SEPOLIA, AVALANCHE, AVALANCHE_FUJI, BSС_MAINNET, BSС_TESTNET, ETH_MAINNET } from "./static/chains";
 
 export * from "./static/chains";
 
@@ -25,6 +25,7 @@ export const IS_NETWORK_DISABLED = {
   [ARBITRUM]: false,
   [AVALANCHE]: false,
   [BSС_MAINNET]: false,
+  [ARBITRUM_SEPOLIA]: false,
 };
 
 export const CHAIN_NAMES_MAP = {
@@ -33,6 +34,7 @@ export const CHAIN_NAMES_MAP = {
   [ARBITRUM]: "Arbitrum",
   [AVALANCHE]: "Avalanche",
   [AVALANCHE_FUJI]: "Avalanche Fuji",
+  [ARBITRUM_SEPOLIA]: "Arbitrum Sepolia",
 };
 
 // added to maxPriorityFeePerGas
@@ -41,6 +43,7 @@ export const CHAIN_NAMES_MAP = {
 export const GAS_PRICE_PREMIUM_MAP = {
   [ARBITRUM]: 0n,
   [AVALANCHE]: 3000000000n, // 3 gwei
+  [ARBITRUM_SEPOLIA]: 0n, // 0 gwei
 };
 
 // added to gasPrice
@@ -149,6 +152,20 @@ const constants = {
     DECREASE_ORDER_EXECUTION_GAS_FEE: parseEther("0.000300001"),
   },
 
+  [ARBITRUM_SEPOLIA]: {
+    nativeTokenSymbol: "ETH",
+    wrappedTokenSymbol: "WETH",
+    defaultCollateralSymbol: "USDC.e",
+    defaultFlagOrdersEnabled: false,
+    positionReaderPropsLength: 9,
+    v2: true,
+
+    SWAP_ORDER_EXECUTION_GAS_FEE: parseEther("0.0003"),
+    INCREASE_ORDER_EXECUTION_GAS_FEE: parseEther("0.0003"),
+    // contract requires that execution fee be strictly greater than instead of gte
+    DECREASE_ORDER_EXECUTION_GAS_FEE: parseEther("0.000300001"),
+  },
+
   [AVALANCHE]: {
     nativeTokenSymbol: "AVAX",
     wrappedTokenSymbol: "WAVAX",
@@ -217,6 +234,7 @@ export const RPC_PROVIDERS = {
     // "https://ava-testnet.public.blastapi.io/v1/avax/fuji/public",
     // "https://rpc.ankr.com/avalanche_fuji",
   ],
+  [ARBITRUM_SEPOLIA]: ["https://arbitrum-sepolia.gateway.tenderly.co"],
 };
 
 export const FALLBACK_PROVIDERS = {
@@ -262,6 +280,17 @@ export const NETWORK_METADATA: { [chainId: number]: NetworkMetadata } = {
     },
     rpcUrls: RPC_PROVIDERS[ARBITRUM],
     blockExplorerUrls: [getExplorerUrl(ARBITRUM)],
+  },
+  [ARBITRUM_SEPOLIA]: {
+    chainId: "0x" + ARBITRUM_SEPOLIA.toString(16),
+    chainName: "Arbitrum Sepolia",
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: RPC_PROVIDERS[ARBITRUM_SEPOLIA],
+    blockExplorerUrls: [getExplorerUrl(ARBITRUM_SEPOLIA)],
   },
   [AVALANCHE]: {
     chainId: "0x" + AVALANCHE.toString(16),
@@ -341,6 +370,8 @@ export function getExplorerUrl(chainId) {
     return "https://snowtrace.io/";
   } else if (chainId === AVALANCHE_FUJI) {
     return "https://testnet.snowtrace.io/";
+  } else if (chainId === ARBITRUM_SEPOLIA) {
+    return "https://sepolia.arbiscan.io/";
   }
   return "https://etherscan.io/";
 }

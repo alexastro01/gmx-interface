@@ -1,5 +1,5 @@
 import { Trans, msg, t } from "@lingui/macro";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Tooltip from "../Tooltip/Tooltip";
 import "./SwapBox.scss";
 
@@ -10,6 +10,13 @@ import { IoMdSwap } from "react-icons/io";
 
 import { ARBITRUM, IS_NETWORK_DISABLED, getChainName, getConstant, isSupportedChain } from "config/chains";
 import { getContract } from "config/contracts";
+import {
+  BASIS_POINTS_DIVISOR,
+  BASIS_POINTS_DIVISOR_BIGINT,
+  DEFAULT_HIGHER_SLIPPAGE_AMOUNT,
+  MAX_ALLOWED_LEVERAGE,
+  USD_DECIMALS,
+} from "config/factors";
 import * as Api from "domain/legacy";
 import {
   DUST_BNB,
@@ -34,13 +41,6 @@ import {
   getPositionKey,
   isTriggerRatioInverted,
 } from "lib/legacy";
-import {
-  USD_DECIMALS,
-  BASIS_POINTS_DIVISOR_BIGINT,
-  DEFAULT_HIGHER_SLIPPAGE_AMOUNT,
-  BASIS_POINTS_DIVISOR,
-  MAX_ALLOWED_LEVERAGE,
-} from "config/factors";
 
 import TokenSelector from "components/TokenSelector/TokenSelector";
 import Tab from "../Tab/Tab";
@@ -56,14 +56,18 @@ import LongIcon from "img/long.svg?react";
 import ShortIcon from "img/short.svg?react";
 import SwapIcon from "img/swap.svg?react";
 
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Button from "components/Button/Button";
 import BuyInputSection from "components/BuyInputSection/BuyInputSection";
 import ExternalLink from "components/ExternalLink/ExternalLink";
 import { LeverageSlider } from "components/LeverageSlider/LeverageSlider";
 import ToggleSwitch from "components/ToggleSwitch/ToggleSwitch";
+import TokenWithIcon from "components/TokenIcon/TokenWithIcon";
 import { get1InchSwapUrl } from "config/links";
 import { getPriceDecimals, getToken, getV1Tokens, getWhitelistedV1Tokens } from "config/tokens";
+import { MAX_METAMASK_MOBILE_DECIMALS } from "config/ui";
 import { useUserReferralCode } from "domain/referrals/hooks";
+import { useTokensAllowanceData } from "domain/synthetics/tokens/useTokenAllowanceData";
 import {
   approveTokens,
   getMostAbundantStableToken,
@@ -71,35 +75,31 @@ import {
   shouldRaiseGasError,
 } from "domain/tokens";
 import { getMinResidualAmount, getTokenInfo, getUsd } from "domain/tokens/utils";
+import { bigMath } from "lib/bigmath";
 import { callContract } from "lib/contracts";
 import { helperToast } from "lib/helperToast";
+import { useLocalizedMap } from "lib/i18n";
 import { useLocalStorageSerializeKey } from "lib/localStorage";
 import {
+  PRECISION,
   bigNumberify,
   expandDecimals,
   formatAmount,
   formatAmountFree,
   limitDecimals,
   parseValue,
-  PRECISION,
 } from "lib/numbers";
 import { getLeverage } from "lib/positions/getLeverage";
 import getLiquidationPrice from "lib/positions/getLiquidationPrice";
 import { usePrevious } from "lib/usePrevious";
+import useIsMetamaskMobile from "lib/wallets/useIsMetamaskMobile";
+import useWallet from "lib/wallets/useWallet";
+import { useHistory } from "react-router-dom";
 import StatsTooltipRow from "../StatsTooltip/StatsTooltipRow";
 import FeesTooltip from "./FeesTooltip";
 import NoLiquidityErrorModal from "./NoLiquidityErrorModal";
 import UsefulLinks from "./UsefulLinks";
 import { ErrorCode, ErrorDisplayType } from "./constants";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import useWallet from "lib/wallets/useWallet";
-import TokenWithIcon from "components/TokenIcon/TokenWithIcon";
-import useIsMetamaskMobile from "lib/wallets/useIsMetamaskMobile";
-import { MAX_METAMASK_MOBILE_DECIMALS } from "config/ui";
-import { useHistory } from "react-router-dom";
-import { bigMath } from "lib/bigmath";
-import { useLocalizedMap } from "lib/i18n";
-import { useTokensAllowanceData } from "domain/synthetics/tokens/useTokenAllowanceData";
 
 const SWAP_ICONS = {
   [LONG]: <LongIcon />,
@@ -402,7 +402,7 @@ export default function SwapBox(props) {
       toTokenInfo?.availableAmount === undefined
         ? undefined
         : toTokenInfo?.availableAmount >
-            (toTokenInfo.poolAmount === undefined ? undefined : toTokenInfo.poolAmount - toTokenInfo.bufferAmount)
+          (toTokenInfo.poolAmount === undefined ? undefined : toTokenInfo.poolAmount - toTokenInfo.bufferAmount)
           ? toTokenInfo.poolAmount - toTokenInfo.bufferAmount
           : toTokenInfo?.availableAmount;
 
@@ -1242,9 +1242,8 @@ export default function SwapBox(props) {
     callContract(chainId, contract, "deposit", {
       value: fromAmount,
       sentMsg: t`Swap submitted.`,
-      successMsg: t`Swapped ${formatAmount(fromAmount, fromToken.decimals, 4, true)} ${
-        fromToken.symbol
-      } for ${formatAmount(toAmount, toToken.decimals, 4, true)} ${toToken.symbol}!`,
+      successMsg: t`Swapped ${formatAmount(fromAmount, fromToken.decimals, 4, true)} ${fromToken.symbol
+        } for ${formatAmount(toAmount, toToken.decimals, 4, true)} ${toToken.symbol}!`,
       failMsg: t`Swap failed.`,
       setPendingTxns,
     }).finally(() => {
@@ -1259,9 +1258,8 @@ export default function SwapBox(props) {
     callContract(chainId, contract, "withdraw", [fromAmount], {
       sentMsg: t`Swap submitted!`,
       failMsg: t`Swap failed.`,
-      successMsg: t`Swapped ${formatAmount(fromAmount, fromToken.decimals, 4, true)} ${
-        fromToken.symbol
-      } for ${formatAmount(toAmount, toToken.decimals, 4, true)} ${toToken.symbol}!`,
+      successMsg: t`Swapped ${formatAmount(fromAmount, fromToken.decimals, 4, true)} ${fromToken.symbol
+        } for ${formatAmount(toAmount, toToken.decimals, 4, true)} ${toToken.symbol}!`,
       setPendingTxns,
     }).finally(() => {
       setIsSubmitting(false);
@@ -1371,9 +1369,8 @@ export default function SwapBox(props) {
     callContract(chainId, contract, method, params, {
       value,
       sentMsg: t`Swap ${!isMarketOrder ? " order " : ""} submitted!`,
-      successMsg: t`Swapped ${formatAmount(fromAmount, fromToken.decimals, 4, true)} ${
-        fromToken.symbol
-      } for ${formatAmount(toAmount, toToken.decimals, 4, true)} ${toToken.symbol}!`,
+      successMsg: t`Swapped ${formatAmount(fromAmount, fromToken.decimals, 4, true)} ${fromToken.symbol
+        } for ${formatAmount(toAmount, toToken.decimals, 4, true)} ${toToken.symbol}!`,
       failMsg: t`Swap failed.`,
       setPendingTxns,
     })
@@ -1402,10 +1399,10 @@ export default function SwapBox(props) {
     const indexToken = getToken(chainId, indexTokenAddress);
     const successMsg = t`
       Created limit order for ${indexToken.symbol} ${isLong ? "Long" : "Short"}: ${formatAmount(
-        toUsdMax,
-        USD_DECIMALS,
-        2
-      )} USD!
+      toUsdMax,
+      USD_DECIMALS,
+      2
+    )} USD!
     `;
     return Api.createIncreaseOrder(
       chainId,
@@ -1758,9 +1755,9 @@ export default function SwapBox(props) {
     () =>
       fromTokenInfo
         ? [
-            `${formatAmount(maxFromTokenIn, fromTokenInfo.decimals, 0, true)} ${fromTokenInfo.symbol}`,
-            `($${formatAmount(maxFromTokenInUSD, USD_DECIMALS, 0, true)})`,
-          ]
+          `${formatAmount(maxFromTokenIn, fromTokenInfo.decimals, 0, true)} ${fromTokenInfo.symbol}`,
+          `($${formatAmount(maxFromTokenInUSD, USD_DECIMALS, 0, true)})`,
+        ]
         : null,
     [fromTokenInfo, maxFromTokenIn, maxFromTokenInUSD]
   );
@@ -1768,9 +1765,9 @@ export default function SwapBox(props) {
     () =>
       toTokenInfo
         ? [
-            `${formatAmount(maxToTokenOut, toTokenInfo.decimals, 0, true)} ${toTokenInfo.symbol}`,
-            `($${formatAmount(maxToTokenOutUSD, USD_DECIMALS, 0, true)})`,
-          ]
+          `${formatAmount(maxToTokenOut, toTokenInfo.decimals, 0, true)} ${toTokenInfo.symbol}`,
+          `($${formatAmount(maxToTokenOutUSD, USD_DECIMALS, 0, true)})`,
+        ]
         : null,
     [maxToTokenOut, maxToTokenOutUSD, toTokenInfo]
   );
@@ -1821,12 +1818,12 @@ export default function SwapBox(props) {
 
   const existingLiquidationPrice = existingPosition
     ? getLiquidationPrice({
-        isLong: existingPosition.isLong,
-        size: existingPosition.size,
-        collateral: existingPosition.collateral,
-        averagePrice: existingPosition.averagePrice,
-        fundingFee: existingPosition.fundingFee,
-      })
+      isLong: existingPosition.isLong,
+      size: existingPosition.size,
+      collateral: existingPosition.collateral,
+      averagePrice: existingPosition.averagePrice,
+      fundingFee: existingPosition.fundingFee,
+    })
     : undefined;
 
   const displayLiquidationPrice = liquidationPrice ? liquidationPrice : existingLiquidationPrice;
@@ -2518,6 +2515,7 @@ export default function SwapBox(props) {
       />
       {renderOrdersToa()}
       {isConfirming && (
+        // Note : this is where the confirmation box is used
         <ConfirmationBox
           isHigherSlippageAllowed={isHigherSlippageAllowed}
           setIsHigherSlippageAllowed={setIsHigherSlippageAllowed}
