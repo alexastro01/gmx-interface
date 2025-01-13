@@ -15,7 +15,7 @@ export const ENV_AVALANCHE_RPC_URLS = import.meta.env.VITE_APP_AVALANCHE_RPC_URL
 export const DEFAULT_CHAIN_ID = ARBITRUM;
 export const CHAIN_ID = DEFAULT_CHAIN_ID;
 
-export const SUPPORTED_CHAIN_IDS = [ARBITRUM, AVALANCHE];
+export const SUPPORTED_CHAIN_IDS = [ARBITRUM, AVALANCHE, ARBITRUM_SEPOLIA];
 
 if (isDevelopment()) {
   SUPPORTED_CHAIN_IDS.push(AVALANCHE_FUJI);
@@ -234,7 +234,7 @@ export const RPC_PROVIDERS = {
     // "https://ava-testnet.public.blastapi.io/v1/avax/fuji/public",
     // "https://rpc.ankr.com/avalanche_fuji",
   ],
-  [ARBITRUM_SEPOLIA]: ["https://arbitrum-sepolia.gateway.tenderly.co"],
+  [ARBITRUM_SEPOLIA]: ["https://arbitrum-sepolia.gateway.tenderly.co", "https://arbitrum-sepolia-rpc.publicnode.com", "https://sepolia-rollup.arbitrum.io/rpc"],
 };
 
 export const FALLBACK_PROVIDERS = {
@@ -245,6 +245,7 @@ export const FALLBACK_PROVIDERS = {
     "https://api.avax-test.network/ext/bc/C/rpc",
     "https://ava-testnet.public.blastapi.io/ext/bc/C/rpc",
   ],
+  [ARBITRUM_SEPOLIA]: ["https://arbitrum-sepolia-rpc.publicnode.com"],
 };
 
 export const NETWORK_METADATA: { [chainId: number]: NetworkMetadata } = {

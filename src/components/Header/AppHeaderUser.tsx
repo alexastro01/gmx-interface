@@ -7,17 +7,17 @@ import { useRouteMatch } from "react-router-dom";
 
 import connectWalletImg from "img/ic_wallet_24.svg";
 
-import { ARBITRUM, AVALANCHE, AVALANCHE_FUJI, getChainName } from "config/chains";
+import { ARBITRUM, ARBITRUM_SEPOLIA, AVALANCHE, AVALANCHE_FUJI, getChainName } from "config/chains";
 import { isDevelopment } from "config/env";
 import { getIcon } from "config/icons";
 
 import { useChainId } from "lib/chains";
 import { getAccountUrl, isHomeSite, shouldShowRedirectModal } from "lib/legacy";
+import { useRedirectPopupTimestamp } from "lib/useRedirectPopupTimestamp";
 import { useTradePageVersion } from "lib/useTradePageVersion";
 import { sendUserAnalyticsConnectWalletClickEvent, userAnalytics } from "lib/userAnalytics";
 import { LandingPageLaunchAppEvent } from "lib/userAnalytics/types";
 import useWallet from "lib/wallets/useWallet";
-import { useRedirectPopupTimestamp } from "lib/useRedirectPopupTimestamp";
 
 import AddressDropdown from "../AddressDropdown/AddressDropdown";
 import ConnectWalletButton from "../Common/ConnectWalletButton";
@@ -48,6 +48,12 @@ const NETWORK_OPTIONS = [
     value: AVALANCHE,
     icon: getIcon(AVALANCHE, "network"),
     color: "#E841424D",
+  },
+  {
+    label: getChainName(ARBITRUM_SEPOLIA),
+    value: ARBITRUM_SEPOLIA,
+    icon: getIcon(ARBITRUM_SEPOLIA, "network"),
+    color: "#264f79",
   },
 ];
 

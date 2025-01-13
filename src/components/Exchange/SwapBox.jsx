@@ -64,7 +64,6 @@ import { LeverageSlider } from "components/LeverageSlider/LeverageSlider";
 import ToggleSwitch from "components/ToggleSwitch/ToggleSwitch";
 import TokenWithIcon from "components/TokenIcon/TokenWithIcon";
 import { get1InchSwapUrl } from "config/links";
-import { getPriceDecimals, getToken, getV1Tokens, getWhitelistedV1Tokens } from "config/tokens";
 import { MAX_METAMASK_MOBILE_DECIMALS } from "config/ui";
 import { useUserReferralCode } from "domain/referrals/hooks";
 import { useTokensAllowanceData } from "domain/synthetics/tokens/useTokenAllowanceData";

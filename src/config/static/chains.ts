@@ -15,4 +15,4 @@ export const ARBITRUM_SEPOLIA = 421614;
 export const FEES_HIGH_BPS = 50;
 export const DEFAULT_ALLOWED_SLIPPAGE_BPS = 30;
 
-export type ChainId = typeof AVALANCHE | typeof AVALANCHE_FUJI | typeof ARBITRUM | typeof ARBITRUM_SEPOLIA;
+export type ChainId = typeof AVALANCHE | typeof AVALANCHE_FUJI | typeof ARBITRUM;

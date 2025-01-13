@@ -1,6 +1,6 @@
 import { ClientConfig } from "viem";
 import type { BatchOptions } from "viem/_types/clients/transports/http";
-import { ARBITRUM, AVALANCHE, AVALANCHE_FUJI } from "./chains";
+import { ARBITRUM, ARBITRUM_SEPOLIA, AVALANCHE, AVALANCHE_FUJI } from "./chains";
 
 export const BATCH_CONFIGS: Record<
   number,
@@ -45,4 +45,17 @@ export const BATCH_CONFIGS: Record<
       },
     },
   },
+  [ARBITRUM_SEPOLIA]: {
+    http: {
+      batchSize: 0,
+      wait: 0,
+    },
+    client: {
+      multicall: {
+        batchSize: 1024 * 1024,
+        wait: 0,
+      },
+    },
+  },
 };
+
